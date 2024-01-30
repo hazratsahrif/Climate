@@ -1,0 +1,205 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/black"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.lexus.ISClimate.trial.TrailFragment">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/settings_illsu"
+        android:orientation="vertical"
+        android:paddingVertical="28dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trial Expired"
+            android:textSize="28sp"
+            android:textColor="@color/white"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/inter_semibold"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="24dp"
+            android:textAlignment="center"
+            android:text="The 7-day trial has come to an end. Please reach out to me and share your device's \nserial number below to receive a license key."
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/inter_medium"
+            />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tvDeviceId"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:background="@drawable/copy_background"
+                android:layout_gravity="center_horizontal"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_medium"
+                />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnCopy"
+                android:layout_marginHorizontal="12dp"
+                android:layout_gravity="center_vertical"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/baseline_content_copy_24"
+                />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginVertical="50dp"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:weightSum="2"
+            android:layout_marginHorizontal="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Enter Provided License Key"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_medium"
+                />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                />
+
+
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:background="@drawable/copy_background"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:id="@+id/etKey"
+                    android:padding="12dp"
+                    android:inputType="text"
+                    android:layout_height="wrap_content"
+                    android:hint="Paste your key here"
+                    android:layout_centerVertical="true"
+                    android:imeOptions="actionDone"
+                    android:layout_marginHorizontal="10dp"
+                    android:lineHeight="3dp"
+                    android:gravity="bottom"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+
+                    />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:visibility="gone"
+                android:progress="100"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submit"
+                android:visibility="visible"
+                android:textAllCaps="false"
+                android:id="@+id/btnSumbit"
+                android:textSize="18sp"
+                android:fontFamily="@font/inter_medium"
+                android:elevation="0dp"
+                android:layout_gravity="center_horizontal"
+                android:backgroundTint="@color/blue"
+                />
+
+        </RelativeLayout>
+
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="22dp"
+            app:dividerColor="@color/divider"
+            android:layout_height="2dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="38dp"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+
+                android:src="@drawable/instagram"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+
+                android:text="Instagram name"
+
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/inter_medium"
+                />
+
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_height="46dp"
+                android:src="@drawable/youtube"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_height="wrap_content"
+                android:text="Youtube url"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/inter_medium"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

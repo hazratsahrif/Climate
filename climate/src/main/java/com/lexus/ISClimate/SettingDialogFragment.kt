@@ -27,7 +27,6 @@ class SettingDialogFragment : DialogFragment() {
         viewModel = ViewModelProvider(requireActivity()).get(MyViewModel::class.java)
         binding = FragmentSettingDialogBinding.inflate(layoutInflater)
         Paper.init(requireContext())
-
         viewModel.getBoolean()
         viewModel.getDegreeBoolean()
         viewModel.getAccessValue()
@@ -36,16 +35,16 @@ class SettingDialogFragment : DialogFragment() {
     }
 
     override fun onStart() {
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
-        actionBar?.hide()
+//        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+//        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
+//        actionBar?.hide()
         super.onStart()
     }
 
     override fun onDestroy() {
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
-        actionBar?.hide()
+//        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+//        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
+//        actionBar?.hide()
         super.onDestroy()
     }
 
@@ -57,7 +56,7 @@ class SettingDialogFragment : DialogFragment() {
         // Inflate the layout for this fragment
         binding = FragmentSettingDialogBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(requireActivity()).get(MyViewModel::class.java)
-//        Paper.init(context)
+        Paper.init(context)
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         binding.btnLeft.setOnClickListener {
@@ -84,11 +83,11 @@ class SettingDialogFragment : DialogFragment() {
 
         binding.btnCelcius.setOnClickListener {
             setCelsiusColor()
-            viewModel.updateDegreeBoolean(false)
+            viewModel.updateDegreeBoolean(true)
         }
         binding.btnFahren.setOnClickListener {
             setFahrenheitColor()
-            viewModel.updateDegreeBoolean(true)
+            viewModel.updateDegreeBoolean(false)
         }
 //        binding.btnActivate.setOnClickListener {
 //            val intent = Intent(requireContext(), TrailFragment::class.java)
@@ -99,12 +98,10 @@ class SettingDialogFragment : DialogFragment() {
 
     private fun observeValue() {
         viewModel.degreeValue.observe(this,Observer{
-
             if (it != null && it == true) {
-                setFahrenheitColor()
-            } else {
-
                 setCelsiusColor()
+            } else {
+                setFahrenheitColor()
             }
         })
         viewModel.booleanValue.observe(this,Observer{
