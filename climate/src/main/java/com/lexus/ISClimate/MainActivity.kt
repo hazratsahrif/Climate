@@ -21,7 +21,9 @@ import com.aoe.fytcanbusmonitor.ModuleCodes.MODULE_CODE_MAIN
 import com.aoe.fytcanbusmonitor.ModuleCodes.MODULE_CODE_SOUND
 import com.aoe.fytcanbusmonitor.MsToolkitConnection
 import com.aoe.fytcanbusmonitor.RemoteModuleProxy
+import com.lexus.ISClimate.SettingDialogFragment
 import com.lexus.ISClimate.viewmodel.MyViewModel
+import io.paperdb.Paper
 
 class MainActivity : AppCompatActivity(), View.OnTouchListener {
     private lateinit var viewModel: MyViewModel
@@ -72,11 +74,95 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         findViewById<ImageButton>(R.id.btnFanMinus).setOnTouchListener(this)
         parentLayout = findViewById<TableRow>(R.id.parentLayout)
         viewModel = ViewModelProvider(this)[MyViewModel::class.java]
+        Paper.init(this)
+//        viewModel.getSoundBoolean()
+        viewModel.getBoolean()
+//        viewModel.getDegreeBoolean()
+//        viewModel.getAccessValue()
+        observeValue()
+        setDriverMode()
+        viewModel.getStartAndEndValuesLiveData().observe(this) { pair ->
+            val (start, end) = pair ?: Pair(null, null)
+            switchLayout(parentLayout, end!!, start!!)
+        }
+//        mediaPlayer = MediaPlayer.create(this, R.raw.beep)
+        findViewById<ImageButton>(R.id.btnSetting).setOnClickListener {
+            val dialogFragment = SettingDialogFragment()
+            dialogFragment.show(supportFragmentManager, "MyDialogFragment")
+        }
 
 
 //        findViewById<TextView>(R.id.text_view).append("hi")
 //        findViewById<TextView>(R.id.text_view).movementMethod = ScrollingMovementMethod()
     }
+
+    private fun observeValue() {
+//        viewModel.isSound.observe(this, Observer {
+//            if (it != null && it == true) {
+//                isSound = it
+////                playAudio(it)
+//            } else {
+//
+//                isSound = false
+//            }
+//        })
+//        viewModel.degreeValue.observe(this, Observer {
+//            it
+//            if (it != null && it == true) {
+//                isCelsius = it
+//            } else {
+//                isCelsius = false
+//            }
+//        })
+//        viewModel.accessGranted.observe(this, Observer {
+//            if (it == true && it != null) {
+//            } else {
+//                saveDate = viewModel.getCurrentDateTime()
+//                if (saveDate != "") {
+//                    currentDate = viewModel.currentDateTime()
+//                    val daysDifference = calculateDateDifference(saveDate, currentDate)
+//                    if (daysDifference >= 8) {
+//
+////                        val intent = Intent(this, TrailFragment::class.java)
+//                        startActivity(intent)
+//
+//                    } else {
+//                    }
+//
+//                } else {
+//                    viewModel.saveCurrentDateTime()
+//                }
+//            }
+//        })
+    }
+
+    private fun setDriverMode() {
+        if (viewModel.booleanValue.value == null) {
+
+        } else {
+            if (viewModel.getBoolean()!!) {
+                switchLayout(parentLayout, 4, 1)
+            } else {
+                switchLayout(parentLayout, 1, 5)
+            }
+        }
+    }
+
+    private fun switchLayout(
+        parentLayout: LinearLayout,
+        leftIndex: Int,
+        rightIndex: Int
+    ) {
+        val layoutLeft = findViewById<LinearLayout>(R.id.layoutLeft)
+        val layoutRight = findViewById<LinearLayout>(R.id.layoutRight)
+        parentLayout.removeView(layoutLeft)
+        parentLayout.removeView(layoutRight)
+
+        // Adding the layouts in the reversed order
+        parentLayout.addView(layoutRight, leftIndex)
+        parentLayout.addView(layoutLeft, rightIndex)
+    }
+
     override fun onStart() {
         super.onStart()
         ModuleCallback.init(this)

@@ -27,7 +27,6 @@ class SettingDialogFragment : DialogFragment() {
         viewModel = ViewModelProvider(requireActivity()).get(MyViewModel::class.java)
         binding = FragmentSettingDialogBinding.inflate(layoutInflater)
         Paper.init(requireContext())
-
         viewModel.getBoolean()
         viewModel.getDegreeBoolean()
         viewModel.getAccessValue()
@@ -36,16 +35,16 @@ class SettingDialogFragment : DialogFragment() {
     }
 
     override fun onStart() {
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
-        actionBar?.hide()
+//        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+//        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
+//        actionBar?.hide()
         super.onStart()
     }
 
     override fun onDestroy() {
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
-        actionBar?.hide()
+//        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+//        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
+//        actionBar?.hide()
         super.onDestroy()
     }
 
