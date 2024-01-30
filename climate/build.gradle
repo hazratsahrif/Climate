@@ -7,6 +7,11 @@ android {
     namespace 'com.lexus.Climate'
     compileSdk 33
 
+    buildFeatures {
+        viewBinding true
+    }
+
+
     defaultConfig {
         applicationId "com.lexus.Climate"
         minSdk 28
