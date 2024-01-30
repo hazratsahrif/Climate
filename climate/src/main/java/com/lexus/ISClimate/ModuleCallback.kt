@@ -37,6 +37,7 @@ class ModuleCallback(name: String, private val view: TextView?) : IModuleCallbac
         ) {
             act.runOnUiThread(Runnable {
                 act.canBusNotify(systemName, updateCode, intArray, floatArray, strArray)
+//                act.canBusNotify(systemName, updateCode, intArray)
             })
         }
     }

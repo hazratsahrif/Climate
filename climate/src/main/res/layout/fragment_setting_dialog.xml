@@ -1,0 +1,397 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:strokeWidth="0dp"
+    app:strokeColor="@android:color/transparent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/transparent"
+    tools:context="com.lexus.ISClimate.SettingDialogFragment">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:background="@drawable/settings_illsu"
+        android:orientation="vertical"
+        android:paddingVertical="28dp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="16dp"
+                android:src="@drawable/setting"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settings"
+                android:textSize="24sp"
+                android:fontFamily="@font/inter_medium"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="22dp"
+            android:layout_width="match_parent"
+
+            android:gravity="center_vertical"
+            android:layout_marginHorizontal="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Driver Seat Position"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_medium"
+                />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
+
+
+            <RelativeLayout
+                android:layout_width="200dp"
+                android:padding="10dp"
+                android:background="@drawable/lock"
+                android:layout_height="56dp">
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:weightSum="2"
+                 android:gravity="center_vertical"
+                 android:layout_height="match_parent">
+                 <androidx.cardview.widget.CardView
+                     android:layout_width="0dp"
+                     android:id="@+id/btnLeft"
+                     android:layout_weight="1"
+                     app:strokeWidth="0dp"
+                     app:cardBackgroundColor="@color/dark_gray"
+                     app:cardCornerRadius="100dp"
+                     android:layout_height="match_parent">
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="Left"
+                         android:layout_gravity="center"
+                         android:textColor="@color/white"
+                         android:textSize="16sp"
+                         android:fontFamily="@font/inter_medium"
+                         />
+
+                 </androidx.cardview.widget.CardView>
+                 <androidx.cardview.widget.CardView
+                     android:id="@+id/btnRight"
+                     android:layout_width="0dp"
+                     android:layout_weight="1"
+                     app:strokeWidth="0dp"
+
+                     app:cardBackgroundColor="@color/blue"
+                     app:cardCornerRadius="100dp"
+                     android:layout_height="match_parent">
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="Right"
+                         android:layout_gravity="center"
+                         android:textColor="@color/white"
+                         android:textSize="16sp"
+                         android:fontFamily="@font/inter_medium"
+                         />
+
+                 </androidx.cardview.widget.CardView>
+
+
+             </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="22dp"
+            android:layout_width="match_parent"
+
+            android:gravity="center_vertical"
+            android:layout_marginHorizontal="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Temperature Unit"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_medium"
+                />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
+
+
+            <RelativeLayout
+                android:layout_width="200dp"
+                android:padding="10dp"
+                android:background="@drawable/lock"
+                android:layout_height="56dp">
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:weightSum="2"
+                 android:gravity="center_vertical"
+                 android:layout_height="match_parent">
+                 <androidx.cardview.widget.CardView
+                     android:id="@+id/btnCelcius"
+                     android:layout_width="0dp"
+                     android:layout_weight="1"
+                     app:strokeWidth="0dp"
+
+                     app:cardBackgroundColor="@color/blue"
+                     app:cardCornerRadius="100dp"
+                     android:layout_height="match_parent">
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="°C"
+                         android:layout_gravity="center"
+                         android:textColor="@color/white"
+                         android:textSize="16sp"
+                         android:fontFamily="@font/inter_medium"
+                         />
+
+                 </androidx.cardview.widget.CardView>
+                 <androidx.cardview.widget.CardView
+                     android:layout_width="0dp"
+                     android:id="@+id/btnFahren"
+                     android:layout_weight="1"
+                     app:strokeWidth="0dp"
+                     app:cardBackgroundColor="@color/dark_gray"
+                     app:cardCornerRadius="100dp"
+                     android:layout_height="match_parent">
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="°F"
+                         android:layout_gravity="center"
+                         android:textColor="@color/white"
+                         android:textSize="16sp"
+                         android:fontFamily="@font/inter_medium"
+                         />
+                 </androidx.cardview.widget.CardView>
+             </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="22dp"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:visibility="visible"
+            android:layout_marginHorizontal="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sound"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_medium"
+                />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
+            <RelativeLayout
+                android:layout_width="200dp"
+                android:padding="10dp"
+                android:background="@drawable/lock"
+                android:layout_height="56dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:weightSum="2"
+                    android:gravity="center_vertical"
+                    android:layout_height="match_parent">
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/btnON"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:strokeWidth="0dp"
+                        app:cardBackgroundColor="@color/dark_gray"
+                        app:cardCornerRadius="100dp"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="On"
+                            android:layout_gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/inter_medium"
+                            />
+
+                    </androidx.cardview.widget.CardView>
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:id="@+id/btnOFF"
+                        android:layout_weight="1"
+                        app:strokeWidth="0dp"
+                        app:cardBackgroundColor="@color/blue"
+                        app:cardCornerRadius="100dp"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Off"
+                            android:layout_gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/inter_medium"
+                            />
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+        </LinearLayout>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="22dp"
+            app:dividerColor="@color/divider"
+            android:layout_height="2dp" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/layoutActivation"
+            android:visibility="visible"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="28dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="License: Trial"
+                android:textSize="18sp"
+                android:layout_marginHorizontal="22dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:fontFamily="@font/inter_medium"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnActivate"
+                android:backgroundTint="@color/blue"
+                android:text="Activate now"
+                android:textAllCaps="false"
+                android:layout_gravity="center_horizontal"
+                />
+
+        </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvActive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="License: Activated"
+                android:textSize="18sp"
+                android:visibility="gone"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/inter_medium"
+                />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="38dp"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+
+                android:src="@drawable/instagram"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+
+                android:text="Instagram name"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/inter_medium"
+                />
+
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_height="46dp"
+                android:src="@drawable/youtube"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_height="wrap_content"
+                android:text="Youtube url"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/inter_medium"
+                />
+        </LinearLayout>
+
+
+
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:gravity="center_horizontal"-->
+<!--            android:layout_marginTop="22dp"-->
+<!--            android:layout_height="wrap_content">-->
+<!--            <ImageView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginHorizontal="30dp"-->
+<!--                android:src="@drawable/instagram"-->
+<!--                />-->
+<!--            <ImageView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/youtube"-->
+<!--                />-->
+<!--        </LinearLayout>-->
+    </LinearLayout>
+</FrameLayout>
