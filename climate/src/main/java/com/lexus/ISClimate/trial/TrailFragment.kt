@@ -35,8 +35,8 @@ class TrailFragment : AppCompatActivity() {
         binding = FragmentTrailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MyViewModel::class.java]
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        supportActionBar?.hide()
+//        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+//        supportActionBar?.hide()
         Paper.init(this)
         getAndroidId(this)
         generateHashKey()

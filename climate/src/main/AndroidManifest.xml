@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.climate"
         tools:targetApi="31">
+        <activity android:name="com.lexus.ISClimate.trial.TrailFragment"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            />
         <activity
             android:name="com.lexus.Climate.MainActivity"
             android:exported="true"
