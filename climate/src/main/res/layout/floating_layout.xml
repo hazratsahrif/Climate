@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/root_conatiner"
+    android:background="@color/blue"
+    android:backgroundTint="@color/black"
+    android:paddingVertical="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:id="@+id/parentLayout"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/layoutLeft"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnLeftTempPlus"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.03"
+                    android:adjustViewBounds="false"
+                    android:background="#000000"
+                    android:cropToPadding="false"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/small_add_circle" />
+
+
+                <TextView
+                    android:id="@+id/txtLeftTemperature"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.04"
+                    android:autoSizeMaxTextSize="24sp"
+                    android:maxLines="1"
+                    android:autoSizeTextType="uniform"
+                    android:fontFamily="@font/inter"
+                    android:gravity="center"
+                    android:text="14.5°"
+                    android:textAlignment="center"
+                    android:textColor="@color/white" />
+
+                <ImageButton
+                    android:id="@+id/btnLeftTempMinus"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.03"
+                    android:background="#000000"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/small_minus_cirlce" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_weight="0.8"
+                android:gravity="bottom"
+                >
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_gravity="bottom"
+                    android:gravity="bottom"
+                    android:layout_height="wrap_content">
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/btnAuto"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.06"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="false"
+                        android:background="#000000"
+                        android:contentDescription="Auto"
+                        android:cropToPadding="false"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/f_auto_off" />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/btnFanOff"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="@color/black"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/f_off"
+                        android:visibility="visible" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/btnAC"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="#000000"
+                        android:cropToPadding="false"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/f_ac_off"
+                        android:visibility="visible" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/btnDualClimate"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="#000000"
+                        android:cropToPadding="false"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/f_dual_off" />
+
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+                    <ImageButton
+                        android:id="@+id/btnDefrost"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="#000000"
+                        android:cropToPadding="false"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/f_defrost_off" />
+
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+                    <ImageButton
+                        android:id="@+id/btnRearDefrost"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="#000000"
+                        android:cropToPadding="false"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/fr_rear_off" />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+                    <ImageButton
+                        android:id="@+id/btnRecirc"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="#000000"
+                        android:cropToPadding="false"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/f_circular_off"
+                        />
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.017"
+                        />
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_gravity="bottom"
+                        android:layout_height="105dp"
+                        android:background="@drawable/divider"
+                        />
+
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/layoutRight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnRightTempPlus"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.03"
+                    android:adjustViewBounds="false"
+                    android:background="#000000"
+                    android:cropToPadding="false"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/small_add_circle" />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.04"
+                    android:id="@+id/txtRightTemperature"
+                    android:fontFamily="@font/inter"
+                    android:gravity="center"
+                    android:autoSizeMaxTextSize="24sp"
+                    android:maxLines="1"
+                    android:text="14.5°"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:autoSizeTextType="uniform"
+                    />
+
+                <ImageButton
+                    android:id="@+id/btnRightTempMinus"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.03"
+                    android:background="#000000"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/small_minus_cirlce" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
