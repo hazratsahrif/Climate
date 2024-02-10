@@ -53,7 +53,7 @@ class MyFloatingService : Service(), View.OnTouchListener  {
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
             .create(MyViewModel::class.java)
         setOnToushClickListner()
-       showLayout()
+        showLayout()
         setInitialTemperature()
         Paper.init(this)
         viewModel.getDegreeBoolean()
@@ -62,7 +62,6 @@ class MyFloatingService : Service(), View.OnTouchListener  {
     private fun observeValue() {
         viewModel.degreeValue.observeForever(Observer {
             Log.d("TAG", "observeValue: ")
-            Toast.makeText(this, "DEGREE" +it, Toast.LENGTH_SHORT).show()
             if (it == null) {
                 viewModel.degreeValue.value = true
                 setInitialTemperature()
@@ -193,99 +192,6 @@ class MyFloatingService : Service(), View.OnTouchListener  {
         connection.addCallback(callback, 100)
         MsToolkitConnection.instance.addObserver(connection)
     }
-
-    override fun onTouch(view: View?, motionEvent: MotionEvent?): Boolean {
-        var canBusCommand: Int = -1
-        when (view?.id) {
-            R.id.btnLeftTempPlus -> {
-                canBusCommand = 3
-            }
-
-            R.id.btnLeftTempMinus -> {
-                canBusCommand = 2
-            }
-
-            R.id.btnRightTempPlus -> {
-                canBusCommand = 5
-            }
-
-            R.id.btnRightTempMinus -> {
-                canBusCommand = 4
-            }
-
-            R.id.btnAuto -> {
-                canBusCommand = 21
-            }
-
-            R.id.btnRecirc -> {
-                canBusCommand = 25
-            }
-
-            R.id.btnAC -> {
-                canBusCommand = 23
-            }
-
-            R.id.btnDualClimate -> {
-                canBusCommand = 16
-            }
-
-            R.id.btnDefrost -> {
-                canBusCommand = 18
-            }
-
-            R.id.btnRearDefrost -> {
-                canBusCommand = 20
-            }
-
-//            R.id.btnFanOff -> {
-//                canBusCommand = 1
-//            }
-        }
-
-        val image = view as ImageView
-        when (motionEvent?.action) {
-            MotionEvent.ACTION_DOWN -> {
-                var highlight = Color.argb(50, 255, 255, 255)
-                if (view!!.id == R.id.btnLeftTempMinus) {
-                    highlight = Color.argb(50, 0, 0, 255)
-                } else if (view.id == R.id.btnLeftTempMinus) {
-                    highlight = Color.argb(50, 255, 0, 0)
-                }
-
-                image?.setColorFilter(highlight, PorterDuff.Mode.SRC_ATOP)
-                image?.invalidate()
-            }
-
-            MotionEvent.ACTION_UP -> {
-                image?.clearColorFilter()
-                image?.invalidate()
-            }
-        }
-
-        if (canBusCommand != -1) {
-            val startEvent: Boolean = motionEvent?.action == MotionEvent.ACTION_DOWN
-            var rm =
-                MsToolkitConnection.instance.remoteToolkit?.getRemoteModule(ModuleCodes.MODULE_CODE_CANBUS)
-            rm?.cmd(0, intArrayOf(canBusCommand, if (startEvent) 1 else 0), null, null)
-            if (startEvent) {
-                view?.performClick()
-            }
-        }
-        return false
-    }
-    private fun setOnToushClickListner() {
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnAuto).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnAC).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnDefrost).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnLeftTempMinus).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnFanOff).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnDualClimate).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnRearDefrost).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnRecirc).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnLeftTempMinus).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnRightTempMinus).setOnTouchListener(this)
-        mFloatingView!!.findViewById<ImageButton>(R.id.btnRightTempPlus).setOnTouchListener(this)
-    }
     fun canBusNotify(
         systemName: String,
         updateCode: Int,
@@ -389,6 +295,99 @@ class MyFloatingService : Service(), View.OnTouchListener  {
         }
 
     }
+    override fun onTouch(view: View?, motionEvent: MotionEvent?): Boolean {
+        var canBusCommand: Int = -1
+        when (view?.id) {
+            R.id.btnLeftTempPlus -> {
+                canBusCommand = 3
+            }
+
+            R.id.btnLeftTempMinus -> {
+                canBusCommand = 2
+            }
+
+            R.id.btnRightTempPlus -> {
+                canBusCommand = 5
+            }
+
+            R.id.btnRightTempMinus -> {
+                canBusCommand = 4
+            }
+
+            R.id.btnAuto -> {
+                canBusCommand = 21
+            }
+
+            R.id.btnRecirc -> {
+                canBusCommand = 25
+            }
+
+            R.id.btnAC -> {
+                canBusCommand = 23
+            }
+
+            R.id.btnDualClimate -> {
+                canBusCommand = 16
+            }
+
+            R.id.btnDefrost -> {
+                canBusCommand = 18
+            }
+
+            R.id.btnRearDefrost -> {
+                canBusCommand = 20
+            }
+
+//            R.id.btnFanOff -> {
+//                canBusCommand = 1
+//            }
+        }
+
+        val image = view as ImageView
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                var highlight = Color.argb(50, 255, 255, 255)
+                if (view!!.id == R.id.btnLeftTempMinus) {
+                    highlight = Color.argb(50, 0, 0, 255)
+                } else if (view.id == R.id.btnLeftTempMinus) {
+                    highlight = Color.argb(50, 255, 0, 0)
+                }
+
+                image?.setColorFilter(highlight, PorterDuff.Mode.SRC_ATOP)
+                image?.invalidate()
+            }
+
+            MotionEvent.ACTION_UP -> {
+                image?.clearColorFilter()
+                image?.invalidate()
+            }
+        }
+
+        if (canBusCommand != -1) {
+            val startEvent: Boolean = motionEvent?.action == MotionEvent.ACTION_DOWN
+            var rm =
+                MsToolkitConnection.instance.remoteToolkit?.getRemoteModule(ModuleCodes.MODULE_CODE_CANBUS)
+            rm?.cmd(0, intArrayOf(canBusCommand, if (startEvent) 1 else 0), null, null)
+            if (startEvent) {
+                view?.performClick()
+            }
+        }
+        return false
+    }
+    private fun setOnToushClickListner() {
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnAuto).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnAC).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnDefrost).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnLeftTempMinus).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnFanOff).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnDualClimate).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnRearDefrost).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnRecirc).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnLeftTempMinus).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnRightTempMinus).setOnTouchListener(this)
+        mFloatingView!!.findViewById<ImageButton>(R.id.btnRightTempPlus).setOnTouchListener(this)
+    }
+
 
 
     override fun onDestroy() {
