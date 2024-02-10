@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 
 import android.view.WindowManager
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -27,6 +29,7 @@ import com.lexus.Climate.R
 class MyFloatingService : Service(), View.OnTouchListener  {
     private var mWindowManager: WindowManager? = null
     private var mFloatingView: View? = null
+    private var handler: Handler
     override fun onBind(intent: Intent): IBinder? {
         return  null
     }
@@ -61,9 +64,14 @@ class MyFloatingService : Service(), View.OnTouchListener  {
         connectCanUp()
         MsToolkitConnection.instance.connect(this)
     }
-
+    private fun visibleLayout() {
+        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.VISIBLE
+        handler.postDelayed({
+            mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
+        },
+            4000L)
+    }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         return START_STICKY
     }
     private fun connectMain() {
