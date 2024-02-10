@@ -5,6 +5,7 @@ import android.os.RemoteException
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.aoe.fytcanbusmonitor.IModuleCallback
+import com.lexus.ISClimate.service.MyFloatingService
 
 class ModuleCallback(name: String, private val view: TextView?) : IModuleCallback.Stub() {
     private val systemName = name
@@ -21,10 +22,15 @@ class ModuleCallback(name: String, private val view: TextView?) : IModuleCallbac
 
     companion object {
         private lateinit var act: MainActivity
+        private lateinit var myService: MyFloatingService
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun init(mainAct: MainActivity) {
             act = mainAct
+        }
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun initService(service: MyFloatingService) {
+            myService = service
         }
 
         @Synchronized
