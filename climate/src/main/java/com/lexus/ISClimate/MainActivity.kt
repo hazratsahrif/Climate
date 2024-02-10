@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
                 if (saveDate != "") {
                     currentDate = viewModel.currentDateTime()
                     val daysDifference = calculateDateDifference(saveDate, currentDate)
-                    if (daysDifference >= 8) {
+                    if (daysDifference >= 2) {
                         val intent = Intent(this, TrailFragment::class.java)
                         startActivity(intent)
 
@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
                 // Calculate the difference in milliseconds
                 val differenceMillis = endDate.time - startDate.time
                 // Convert milliseconds to days
-                return TimeUnit.MILLISECONDS.toDays(differenceMillis)
+                return TimeUnit.MILLISECONDS.toMinutes(differenceMillis)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -237,22 +237,22 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
             R.id.btnLeftTempPlus -> {
 
                 canBusCommand = 3
-                playAudio(isSound!!)
+//                playAudio(isSound!!)
             }
 
             R.id.btnLeftTempMinus -> {
                 canBusCommand = 2
-                playAudio(isSound!!)
+//                playAudio(isSound!!)
             }
 
             R.id.btnRightTempPlus -> {
                 canBusCommand = 5
-                playAudio(isSound!!)
+//                playAudio(isSound!!)
             }
 
             R.id.btnRightTempMinus -> {
                 canBusCommand = 4
-                playAudio(isSound!!)
+//                playAudio(isSound!!)
             }
 
             R.id.btnAuto -> {
@@ -386,6 +386,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
                         valueOfDegree = newTemp
                         val txtTemperature = findViewById<TextView>(R.id.txtLeftTemperature)
                         updateTemperatureText(newTemp!!, txtTemperature)
+                        playAudio(isSound!!)
                     }
 
 //                    if (newTemp == -2) {
@@ -416,6 +417,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
                         valueOfRightDegree = newTemp
                         val txtTemperature = findViewById<TextView>(R.id.txtRightTemperature)
                         updateTemperatureText(newTemp!!, txtTemperature)
+                        playAudio(isSound!!)
                     }
 //                    if (newTemp == -2) {
 //                        txtTemperature.text = "LO"
