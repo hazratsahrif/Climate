@@ -8,6 +8,7 @@ import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -18,27 +19,62 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import com.aoe.fytcanbusmonitor.ModuleCodes
 import com.aoe.fytcanbusmonitor.MsToolkitConnection
 import com.lexus.Climate.IPCConnection
 import com.lexus.Climate.MainActivity
 import com.lexus.Climate.ModuleCallback
 import com.lexus.Climate.R
+import com.lexus.ISClimate.trial.TrailFragment
+import com.lexus.ISClimate.viewmodel.MyViewModel
+import io.paperdb.Paper
 
 
 class MyFloatingService : Service(), View.OnTouchListener  {
+    private lateinit var viewModel: MyViewModel
     private var mWindowManager: WindowManager? = null
     private var mFloatingView: View? = null
-    private var handler: Handler
+    private var valueOfDegree: Int? = 1
+    private var valueOfRightDegree: Int? = 1
+    private var isCelsius: Boolean? = true
+
     override fun onBind(intent: Intent): IBinder? {
         return  null
     }
 
     override fun onCreate() {
         super.onCreate()
-
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.floating_layout, null)
+        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+            .create(MyViewModel::class.java)
         setOnToushClickListner()
+       showLayout()
+        setInitialTemperature()
+        Paper.init(this)
+        viewModel.getDegreeBoolean()
+        observeValue()
+    }
+    private fun observeValue() {
+        viewModel.degreeValue.observeForever(Observer {
+            Log.d("TAG", "observeValue: ")
+            Toast.makeText(this, "DEGREE" +it, Toast.LENGTH_SHORT).show()
+            if (it == null) {
+                viewModel.degreeValue.value = true
+                setInitialTemperature()
+
+            } else {
+                isCelsius = it
+                setInitialTemperature()
+            }
+        })
+    }
+
+    private fun showLayout() {
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -55,6 +91,7 @@ class MyFloatingService : Service(), View.OnTouchListener  {
         mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         mWindowManager?.addView(mFloatingView, params)
     }
+
     override fun onStart(intent: Intent?, startId: Int) {
         super.onStart(intent, startId)
         ModuleCallback.initService(this)
@@ -66,12 +103,13 @@ class MyFloatingService : Service(), View.OnTouchListener  {
     }
     private fun visibleLayout() {
         mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.VISIBLE
-        handler.postDelayed({
+        Handler().postDelayed({
             mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
         },
             4000L)
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
         return START_STICKY
     }
     private fun connectMain() {
@@ -81,6 +119,51 @@ class MyFloatingService : Service(), View.OnTouchListener  {
             connection.addCallback(callback, i)
         }
         MsToolkitConnection.instance.addObserver(connection)
+    }
+    private fun setInitialTemperature() {
+        val txtTemperature = mFloatingView!!.findViewById<TextView>(R.id.txtLeftTemperature)
+        val txtRightTemperature = mFloatingView!!.findViewById<TextView>(R.id.txtRightTemperature)
+        updateTemperatureText(valueOfDegree!!, txtTemperature)
+        updateTemperatureText(valueOfRightDegree!!, txtRightTemperature)
+    }
+
+    private fun updateTemperatureText(newTemp: Int, textView: TextView) {
+        if (newTemp == -2) {
+            textView.text = "LO"
+        } else if (newTemp == -3) {
+            textView.text = "HI"
+        } else {
+            val inF: Int? = newTemp?.plus(64)
+            if (inF != null) {
+//                            txtTemperature.text = "$inF°"
+                if (isCelsius!!) {
+                    val celsiusValue = fahrenheitToCelsius(newTemp)
+                    Log.d("TAG", "LEFT VALUE$celsiusValue")
+                    Log.d("TAG", "RIGHT VALUE$celsiusValue")
+                    textView.text = "$celsiusValue°"
+                } else {
+                    textView.text = "$inF°"
+                    Log.d("TAG", "LEFT VALUE$inF")
+                    Log.d("TAG", "RIGHT VALUE$inF")
+
+                }
+            }
+        }
+    }
+
+    private fun fahrenheitToCelsius(fahrenheit: Int): Double {
+        val initialValue = 17
+        if (fahrenheit == 1) {
+            return (initialValue.toDouble() + fahrenheit)
+        } else {
+            if (fahrenheit % 2 == 0) {
+                return (initialValue.toDouble() + (fahrenheit / 2.0) + 0.5)
+            } else {
+                return (initialValue.toDouble() + (fahrenheit / 2.0) + 0.5)
+            }
+
+        }
+
     }
 
     private fun connectCanbus() {
@@ -243,7 +326,7 @@ class MyFloatingService : Service(), View.OnTouchListener  {
 
                 4 -> {
                     val autoOn = intArray?.get(0)
-//                    visibleLayout()
+                    visibleLayout()
                     mFloatingView!!.findViewById<ImageButton>(R.id.btnAuto)
                         .setImageResource(if (autoOn == 1) R.drawable.f_auto_on else R.drawable.f_auto_off)
 
@@ -252,14 +335,14 @@ class MyFloatingService : Service(), View.OnTouchListener  {
 
                 2 -> {
                     val acOn = intArray?.get(0)
-//                    visibleLayout()
+                    visibleLayout()
                     mFloatingView!!.findViewById<ImageButton>(R.id.btnAC)
                         .setImageResource(if (acOn == 1) R.drawable.f_ac_on else R.drawable.f_ac_off)
                 }
 
                 3 -> {
                     val recircOn = intArray?.get(0)
-//                    visibleLayout()
+                    visibleLayout()
                     mFloatingView!!.findViewById<ImageButton>(R.id.btnRecirc)
                         .setImageResource(if (recircOn == 1) R.drawable.f_circular_on else R.drawable.f_circular_off)
                 }
@@ -272,14 +355,14 @@ class MyFloatingService : Service(), View.OnTouchListener  {
 
                 14 -> {
                     val rearDefrost = intArray?.get(0)
-//                    visibleLayout()
+                    visibleLayout()
                     mFloatingView!!.findViewById<ImageButton>(R.id.btnRearDefrost)
                         .setImageResource(if (rearDefrost == 1) R.drawable.f_rear_on else R.drawable.fr_rear_off)
                 }
 
                 10 -> {
                     val fanSpeed = intArray?.get(0)
-//                    visibleLayout()
+                    visibleLayout()
 //                    mFloatingView!!.findViewById<ImageButton>(R.id.btnFanOff)
 //                        .setImageResource(if (fanSpeed != 0) R.drawable.f_fan_on else R.drawable.f_fan_off)
 
@@ -287,7 +370,7 @@ class MyFloatingService : Service(), View.OnTouchListener  {
 
                 6 -> {
                     val defrostOn = intArray?.get(0)
-//                    visibleLayout()
+                    visibleLayout()
                     mFloatingView!!.findViewById<ImageButton>(R.id.btnDefrost)
                         .setImageResource(if (defrostOn == 1) R.drawable.f_defrost_on else R.drawable.f_defrost_off)
 
@@ -295,7 +378,7 @@ class MyFloatingService : Service(), View.OnTouchListener  {
 
                 5 -> {
                     val dualClimate = intArray?.get(0)
-//                    visibleLayout()
+                    visibleLayout()
                     mFloatingView!!.findViewById<ImageButton>(R.id.btnDualClimate)
                         .setImageResource(if (dualClimate == 1) R.drawable.f_dual_on else R.drawable.f_dual_off)
 
@@ -314,4 +397,10 @@ class MyFloatingService : Service(), View.OnTouchListener  {
     }
 
 
+}class MyViewModelStoreOwner : ViewModelStoreOwner {
+    private val viewModelStore = ViewModelStore()
+
+    override fun getViewModelStore(): ViewModelStore {
+        return viewModelStore
+    }
 }
