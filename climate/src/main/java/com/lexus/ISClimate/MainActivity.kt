@@ -4,8 +4,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.MotionEvent
@@ -28,6 +30,7 @@ import com.aoe.fytcanbusmonitor.ModuleCodes.MODULE_CODE_SOUND
 import com.aoe.fytcanbusmonitor.MsToolkitConnection
 import com.aoe.fytcanbusmonitor.RemoteModuleProxy
 import com.lexus.ISClimate.SettingDialogFragment
+import com.lexus.ISClimate.service.MyFloatingService
 import com.lexus.ISClimate.trial.TrailFragment
 import com.lexus.ISClimate.viewmodel.MyViewModel
 import io.paperdb.Paper
@@ -38,6 +41,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity(), View.OnTouchListener {
     private lateinit var viewModel: MyViewModel
     private val remoteProxy = RemoteModuleProxy()
+    private val SYSTEM_ALERT_WINDOW_PERMISSION_CODE = 101
 
         private var mediaPlayer: MediaPlayer? = null
     private var isSound: Boolean? = false
@@ -45,8 +49,8 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
     private lateinit var saveDate: String
     private lateinit var currentDate: String
     private lateinit var parentLayout: LinearLayout
-    var valueOfDegree: Int? = 1
-    var valueOfRightDegree: Int? = 1
+    private var valueOfDegree: Int? = 1
+    private var valueOfRightDegree: Int? = 1
     private var windowOn: Boolean = false
     private var faceOn: Boolean = false
     private var feetOn: Boolean = false
@@ -78,6 +82,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         viewModel.getAccessValue()
         observeValue()
         setDriverMode()
+
         viewModel.getStartAndEndValuesLiveData().observe(this) { pair ->
             val (start, end) = pair ?: Pair(null, null)
             switchLayout(parentLayout, end!!, start!!)
@@ -87,27 +92,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
             val dialogFragment = SettingDialogFragment()
             dialogFragment.show(supportFragmentManager, "MyDialogFragment")
         }
-//        findViewById<TextView>(R.id.text_view).append("hi")
-//        findViewById<TextView>(R.id.text_view).movementMethod = ScrollingMovementMethod()
     }
-
-//    private fun setOnClick() {
-//        findViewById<ImageButton>(R.id.btnLeftTempPlus).setOnClickListener{
-//            playAudio(isSound!!)
-//        }
-//        findViewById<ImageButton>(R.id.btnRightTempPlus).setOnClickListener{
-//            playAudio(isSound!!)
-//        }
-//        findViewById<ImageButton>(R.id.btnLeftTempMinus).setOnClickListener{
-//            playAudio(isSound!!)
-//        }
-//        findViewById<ImageButton>(R.id.btnRightTempMinus).setOnClickListener{
-//            playAudio(isSound!!)
-//        }
-//        findViewById<ImageButton>(R.id.btnFanOff).setOnClickListener{
-//            playAudio(isSound!!)
-//        }
-//    }
 
     private fun setOnToushClickListner() {
         findViewById<ImageButton>(R.id.btnLeftTempPlus).setOnTouchListener(this)
@@ -223,12 +208,31 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 
     override fun onStart() {
         super.onStart()
+        getPermisson()
+
+
         ModuleCallback.init(this)
         connectMain()
         connectCanbus()
         connectSound()
         connectCanUp()
         MsToolkitConnection.instance.connect(this)
+
+
+    }
+
+    private fun getPermisson() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            // If not, request the permission
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION_CODE)
+        } else {
+            // Permission has been granted, start the service
+            startService(Intent(this,MyFloatingService::class.java))
+        }
     }
 
     override fun onTouch(view: View?, motionEvent: MotionEvent?): Boolean {
@@ -610,6 +614,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         }
     }
     override fun onDestroy() {
+
         mediaPlayer?.release()
         super.onDestroy()
     }

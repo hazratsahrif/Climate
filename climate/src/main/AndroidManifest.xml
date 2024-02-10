@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lexus.Climate">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!--<uses-permission android:name="android.permission.ACCESS_BACKGROUND_SERVICE"/>-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,15 +17,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.climate"
         tools:targetApi="31">
-        <activity android:name="com.lexus.ISClimate.trial.TrailFragment"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            />
+        <service
+            android:name="com.lexus.ISClimate.service.MyFloatingService"
+            android:enabled="true"
+            android:exported="true"></service>
         <activity
-            android:name="com.lexus.Climate.MainActivity"
+            android:name="com.lexus.ISClimate.trial.TrailFragment"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
-           <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
