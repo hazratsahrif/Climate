@@ -209,14 +209,13 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
     override fun onStart() {
         super.onStart()
         getPermisson()
-
-
         ModuleCallback.init(this)
         connectMain()
         connectCanbus()
         connectSound()
         connectCanUp()
         MsToolkitConnection.instance.connect(this)
+        stopService(Intent(this,MyFloatingService::class.java))
 
 
     }
@@ -613,9 +612,18 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
              findViewById<ImageButton>(button).setColorFilter(color)
         }
     }
+
+
+    override fun onBackPressed() {
+        startService(Intent(this,MyFloatingService::class.java))
+        Log.d("TAG", "Back: ")
+        super.onBackPressed()
+    }
     override fun onDestroy() {
 
         mediaPlayer?.release()
+        Log.d("TAG", "onDestroy: ")
+        startService(Intent(this,MyFloatingService::class.java))
         super.onDestroy()
     }
 }
