@@ -45,20 +45,14 @@ import com.shared.Utils
 import io.paperdb.Paper
 import org.koin.android.ext.android.inject
 
-class FloatingService : Service(), View.OnTouchListener, ViewModelStoreOwner {
-//    private val viewModel: MyViewModel by lazy {
-//        ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-//            .create(MyViewModel::class.java)
-//    }
+class FloatingService : Service(), View.OnTouchListener {
+
     private var mWindowManager: WindowManager? = null
     private var mFloatingView: View? = null
     private var params: WindowManager.LayoutParams? = null
     private lateinit var utils: Utils
-    private val viewModelFactory: ViewModelProvider.Factory by inject()
-    lateinit var serviceViewModelStore: ViewModelStore
-//    private val viewModel by viewModel<MyViewModel>()
 
-//    private lateinit var viewModel: MyViewModel
+    private lateinit var viewModel: MyViewModel
 
     //    private var isSound: Boolean? = false
     private var isCelsius: Boolean? = true
@@ -69,16 +63,6 @@ class FloatingService : Service(), View.OnTouchListener, ViewModelStoreOwner {
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
-    private val observer = Observer<Boolean> {
-        Log.d("TAG", "Observe value in service $it")
-        if (it == null) {
-            getViewModel().degreeValue.value = true
-            setInitialTemperature()
-        } else {
-            isCelsius = it
-            setInitialTemperature()
-        }
-    }
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate() {
         super.onCreate()
@@ -86,24 +70,17 @@ class FloatingService : Service(), View.OnTouchListener, ViewModelStoreOwner {
             1,
             Notification()
         )
-        getViewModel().degreeValue.observeForever(observer)
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.floating_layout, null)
         utils = Utils()
+        Paper.init(this)
         showFloatingView()
 
-//        parentLayout = mFloatingView!!.findViewById<TableRow>(R.id.parentLayout)
-//        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-//            .create(MyViewModel::class.java)
-        Paper.init(this)
-        getViewModel().getSoundBoolean()
-        getViewModel().getBoolean()
-        getViewModel().getDegreeBoolean()
-        getViewModel().getAccessValue()
+        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+            .create(MyViewModel::class.java)
+
 //        observeValue()
 //        setDriverMode()
-        startService(Intent(this, FloatingService::class.java))
         //Inflate the floating view layout we created
-//        mFloatingView = LayoutInflater.from(this).inflate(R.layout.floa, null)
         setOnToushClickListner()
         //Set the close button
 //        val closeButtonCollapsed = mFloatingView!!.findViewById<ImageButton>(R.id.btnAuto) as ImageButton
@@ -179,7 +156,7 @@ class FloatingService : Service(), View.OnTouchListener, ViewModelStoreOwner {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
+//        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
         visibleLayout()
         return super.onStartCommand(intent, flags, startId)
 
@@ -453,12 +430,6 @@ class FloatingService : Service(), View.OnTouchListener, ViewModelStoreOwner {
         }
     }
 
-    fun getViewModel(): MyViewModel {
-        return ViewModelProvider(this, viewModelFactory).get(MyViewModel::class.java)
-    }
-
-    override val viewModelStore: ViewModelStore
-        get() = serviceViewModelStore
 
 
 }

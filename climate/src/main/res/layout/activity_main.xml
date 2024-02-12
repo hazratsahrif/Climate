@@ -48,12 +48,10 @@
         android:layout_height="match_parent"
         android:id="@+id/parentLayout"
         android:layout_weight="5">
-
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".1" />
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:id="@+id/layoutLeft"
@@ -239,7 +237,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".6" />
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:id="@+id/layoutRight"
@@ -297,7 +294,6 @@
 
                         />
                 </LinearLayout>
-
         <Space
             android:layout_width="0dp"
             android:layout_height="wrap_content"

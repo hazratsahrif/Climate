@@ -4,9 +4,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -27,21 +28,34 @@ import com.aoe.fytcanbusmonitor.ModuleCodes.MODULE_CODE_MAIN
 import com.aoe.fytcanbusmonitor.ModuleCodes.MODULE_CODE_SOUND
 import com.aoe.fytcanbusmonitor.MsToolkitConnection
 import com.aoe.fytcanbusmonitor.RemoteModuleProxy
+import com.event.BooleanCelsiousChangedEvent
+import com.koinmoduel.viewModelModule
 import com.lexus.ISClimate.SettingDialogFragment
 import com.lexus.ISClimate.service.FloatingService
 import com.lexus.ISClimate.trial.TrailFragment
 import com.lexus.ISClimate.viewmodel.MyViewModel
+import com.shared.Utils
 import io.paperdb.Paper
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.context.GlobalContext.startKoin
+import org.koin.core.context.stopKoin
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity(), View.OnTouchListener {
+
 //    private lateinit var viewModel: MyViewModel
-    private val viewModel by viewModel<MyViewModel>()
+//    private val viewModel by viewModel<MyViewModel>()
+
+    private lateinit var viewModel: MyViewModel
+//    private val viewModel by viewModel<MyViewModel>()
+
     private val remoteProxy = RemoteModuleProxy()
+    lateinit var utils: Utils
 
     private var doubleBackToExitPressedOnce = false
         private var mediaPlayer: MediaPlayer? = null
@@ -49,6 +63,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
     private var isCelsius: Boolean? = true
     private lateinit var saveDate: String
     private lateinit var currentDate: String
+    private  var isPermission:Boolean = false
     private lateinit var parentLayout: LinearLayout
     var valueOfDegree: Int? = 1
     var valueOfRightDegree: Int? = 1
@@ -67,12 +82,14 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         R.drawable.loader7, // Add more drawable resources here
         // Add more drawable resources here
     )
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        utils = Utils()
          setOnToushClickListner()
+        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
+
 //        setOnClick()
         parentLayout = findViewById<TableRow>(R.id.parentLayout)
 //        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
@@ -83,12 +100,15 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         viewModel.getAccessValue()
         observeValue()
         setDriverMode()
-        startService( Intent(this, FloatingService::class.java))
+//        startService( Intent(this, FloatingService::class.java))
+//        startService( Intent(this, FloatingService::class.java))
         viewModel.getStartAndEndValuesLiveData().observe(this) { pair ->
             val (start, end) = pair ?: Pair(null, null)
-            switchLayout(parentLayout, end!!, start!!)
+
+            switchLayout(parentLayout,end!!,start!!)
+
+//            switchLayout(parentLayout, end!!, start!!)
         }
-        mediaPlayer = MediaPlayer.create(this, R.raw.beep)
         findViewById<ImageButton>(R.id.btnSetting).setOnClickListener {
             val dialogFragment = SettingDialogFragment()
             dialogFragment.show(supportFragmentManager, "MyDialogFragment")
@@ -98,6 +118,22 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 //            startService( Intent(this, FloatingService::class.java))
 //            Log.d("TAG","SERVICE START CLICK")
 //        }
+
+
+    }
+
+    private fun getPermission() {
+        if (!Settings.canDrawOverlays(applicationContext)) {
+
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            val uri = Uri.fromParts("package", packageName, null)
+            intent.data = uri
+            startActivity(intent)
+        }
+        else{
+            isPermission = true
+            startService(Intent(this,FloatingService::class.java))
+        }
 
     }
 
@@ -168,6 +204,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         updateTemperatureText(valueOfRightDegree!!, txtRightTemperature)
     }
 
+
     private fun calculateDateDifference(startDateStr: String, endDateStr: String): Long {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         try {
@@ -192,9 +229,14 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 
         } else {
             if (viewModel.getBoolean()!!) {
-                switchLayout(parentLayout, 4, 1)
+                switchLayout(parentLayout,4,1)
+//                EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.getDegreeBoolean()!!,4,1))
+
+//                switchLayout(parentLayout, 4, 1)
             } else {
-                switchLayout(parentLayout, 1, 5)
+//                switchLayout(parentLayout, 1, 5)
+                switchLayout(parentLayout,1,5)
+//                EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.getDegreeBoolean()!!,1,5))
             }
         }
     }
@@ -209,357 +251,389 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         parentLayout.removeView(layoutLeft)
         parentLayout.removeView(layoutRight)
 
-        // Adding the layouts in the reversed order
-        parentLayout.addView(layoutRight, leftIndex)
-        parentLayout.addView(layoutLeft, rightIndex)
     }
+        override fun onResume() {
+            Log.d("TAG", "onResume: get called ")
+            super.onResume()
 
-    override fun onStart() {
-        super.onStart()
-        ModuleCallback.init(this)
-        connectMain()
-        connectCanbus()
-        connectSound()
-        connectCanUp()
-        MsToolkitConnection.instance.connect(this)
-    }
-
-    override fun onTouch(view: View?, motionEvent: MotionEvent?): Boolean {
-        var canBusCommand: Int = -1
-        when (view?.id) {
-            R.id.btnLeftTempPlus -> {
-
-                canBusCommand = 3
-//                playAudio(isSound!!)
-            }
-
-            R.id.btnLeftTempMinus -> {
-                canBusCommand = 2
-//                playAudio(isSound!!)
-            }
-
-            R.id.btnRightTempPlus -> {
-                canBusCommand = 5
-//                playAudio(isSound!!)
-            }
-
-            R.id.btnRightTempMinus -> {
-                canBusCommand = 4
-//                playAudio(isSound!!)
-            }
-
-            R.id.btnAuto -> {
-                canBusCommand = 21
-            }
-
-            R.id.btnVent -> {
-                canBusCommand = 36
-            }
-
-            R.id.btnRecirc -> {
-                canBusCommand = 25
-            }
-
-            R.id.btnAC -> {
-                canBusCommand = 23
-            }
-
-            R.id.btnDualClimate -> {
-                canBusCommand = 16
-            }
-
-            R.id.btnDefrost -> {
-                canBusCommand = 18
-            }
-
-            R.id.btnRearDefrost -> {
-                canBusCommand = 20
-            }
-            R.id.btnFanPlus -> {
-                canBusCommand = 10
-            }
-
-            R.id.btnFanMinus -> {
-                canBusCommand = 9
-            }
-
-            R.id.btnFanOff -> {
-                canBusCommand = 1
-            }
         }
 
-        val image = view as ImageView
-        when (motionEvent?.action) {
-            MotionEvent.ACTION_DOWN -> {
-                var highlight = Color.argb(50, 255, 255, 255)
-                if (view.id == R.id.btnLeftTempMinus) {
-                    highlight = Color.argb(50, 0, 0, 255)
-                } else if (view.id == R.id.btnLeftTempMinus) {
-                    highlight = Color.argb(50, 255, 0, 0)
+
+        override fun onStart() {
+            super.onStart()
+//        stopService(Intent(this,FloatingService::class.java))
+            ModuleCallback.init(this)
+            connectMain()
+            connectCanbus()
+            connectSound()
+            connectCanUp()
+            MsToolkitConnection.instance.connect(this)
+            getPermission()
+        }
+
+        override fun onTouch(view: View?, motionEvent: MotionEvent?): Boolean {
+            var canBusCommand: Int = -1
+            when (view?.id) {
+                R.id.btnLeftTempPlus -> {
+
+                    canBusCommand = 3
+//                playAudio(isSound!!)
                 }
 
-                image?.setColorFilter(highlight, PorterDuff.Mode.SRC_ATOP)
-                image?.invalidate()
+                R.id.btnLeftTempMinus -> {
+                    canBusCommand = 2
+//                playAudio(isSound!!)
+                }
+
+                R.id.btnRightTempPlus -> {
+                    canBusCommand = 5
+//                playAudio(isSound!!)
+                }
+
+                R.id.btnRightTempMinus -> {
+                    canBusCommand = 4
+//                playAudio(isSound!!)
+                }
+
+                R.id.btnAuto -> {
+                    canBusCommand = 21
+                }
+
+                R.id.btnVent -> {
+                    canBusCommand = 36
+                }
+
+                R.id.btnRecirc -> {
+                    canBusCommand = 25
+                }
+
+                R.id.btnAC -> {
+                    canBusCommand = 23
+                }
+
+                R.id.btnDualClimate -> {
+                    canBusCommand = 16
+                }
+
+                R.id.btnDefrost -> {
+                    canBusCommand = 18
+                }
+
+                R.id.btnRearDefrost -> {
+                    canBusCommand = 20
+                }
+
+                R.id.btnFanPlus -> {
+                    canBusCommand = 10
+                }
+
+                R.id.btnFanMinus -> {
+                    canBusCommand = 9
+                }
+
+                R.id.btnFanOff -> {
+                    canBusCommand = 1
+                }
             }
 
-            MotionEvent.ACTION_UP -> {
-                image?.clearColorFilter()
-                image?.invalidate()
+            val image = view as ImageView
+            when (motionEvent?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    var highlight = Color.argb(50, 255, 255, 255)
+                    if (view.id == R.id.btnLeftTempMinus) {
+                        highlight = Color.argb(50, 0, 0, 255)
+                    } else if (view.id == R.id.btnLeftTempMinus) {
+                        highlight = Color.argb(50, 255, 0, 0)
+                    }
+
+                    image?.setColorFilter(highlight, PorterDuff.Mode.SRC_ATOP)
+                    image?.invalidate()
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    image?.clearColorFilter()
+                    image?.invalidate()
+                }
             }
-        }
 
-        if (canBusCommand != -1) {
-            val startEvent: Boolean = motionEvent?.action == MotionEvent.ACTION_DOWN
-            var rm = MsToolkitConnection.instance.remoteToolkit?.getRemoteModule(MODULE_CODE_CANBUS)
-            rm?.cmd(0, intArrayOf(canBusCommand, if (startEvent) 1 else 0), null, null)
-            if (startEvent) {
-                view?.performClick()
+            if (canBusCommand != -1) {
+                val startEvent: Boolean = motionEvent?.action == MotionEvent.ACTION_DOWN
+                var rm =
+                    MsToolkitConnection.instance.remoteToolkit?.getRemoteModule(MODULE_CODE_CANBUS)
+                rm?.cmd(0, intArrayOf(canBusCommand, if (startEvent) 1 else 0), null, null)
+                if (startEvent) {
+                    view?.performClick()
+                }
             }
+            return false
         }
-        return false
-    }
 
-    private fun connectMain() {
-        val callback = ModuleCallback("Main", findViewById(R.id.text_view))
-        val connection = IPCConnection(MODULE_CODE_MAIN)
-        for (i in 0..119) {
-            connection.addCallback(callback, i)
-        }
-        MsToolkitConnection.instance.addObserver(connection)
-    }
-
-    private fun connectCanbus() {
-        val callback = ModuleCallback("Canbus", findViewById(R.id.text_view))
-        val connection = IPCConnection(MODULE_CODE_CANBUS)
-        for (i in 0..50) {
-            connection.addCallback(callback, i)
-        }
-        for (i in 1000..1036) {
-            connection.addCallback(callback, i)
-        }
-        MsToolkitConnection.instance.addObserver(connection)
-    }
-
-    private fun connectSound() {
-        val callback = ModuleCallback("Sound", findViewById(R.id.text_view))
-        val connection = IPCConnection(MODULE_CODE_SOUND)
-        for (i in 0..49) {
-            connection.addCallback(callback, i)
-        }
-        MsToolkitConnection.instance.addObserver(connection)
-    }
-
-    private fun connectCanUp() {
-        val callback = ModuleCallback("CanUp", findViewById(R.id.text_view))
-        val connection = IPCConnection(MODULE_CODE_CAN_UP)
-        connection.addCallback(callback, 100)
-        MsToolkitConnection.instance.addObserver(connection)
-    }
-
-    fun canBusNotify(
-        systemName: String,
-        updateCode: Int,
-        intArray: IntArray?,
-        floatArray: FloatArray?,
-        strArray: Array<String?>?
-    ) {
-        if (systemName.lowercase().equals("canbus")) {
-            if (updateCode in 1..16 || updateCode in 69..81 && updateCode != 77) {
-                findViewById<TextView>(R.id.text_view).append(
-                    "updateCode: " + updateCode + " value: " + intArray?.get(
-                        0
-                    ) + "\n"
-                )
+        private fun connectMain() {
+            val callback = ModuleCallback("Main", findViewById(R.id.text_view))
+            val connection = IPCConnection(MODULE_CODE_MAIN)
+            for (i in 0..119) {
+                connection.addCallback(callback, i)
             }
-            when (updateCode) {
+            MsToolkitConnection.instance.addObserver(connection)
+        }
 
-                11 -> {
-                    val newTemp = intArray?.get(0)
-                    if (newTemp != null) {
-                        valueOfDegree = newTemp
-                        val txtTemperature = findViewById<TextView>(R.id.txtLeftTemperature)
-                        updateTemperatureText(newTemp!!, txtTemperature)
+        private fun connectCanbus() {
+            val callback = ModuleCallback("Canbus", findViewById(R.id.text_view))
+            val connection = IPCConnection(MODULE_CODE_CANBUS)
+            for (i in 0..50) {
+                connection.addCallback(callback, i)
+            }
+            for (i in 1000..1036) {
+                connection.addCallback(callback, i)
+            }
+            MsToolkitConnection.instance.addObserver(connection)
+        }
+
+        private fun connectSound() {
+            val callback = ModuleCallback("Sound", findViewById(R.id.text_view))
+            val connection = IPCConnection(MODULE_CODE_SOUND)
+            for (i in 0..49) {
+                connection.addCallback(callback, i)
+            }
+            MsToolkitConnection.instance.addObserver(connection)
+        }
+
+        private fun connectCanUp() {
+            val callback = ModuleCallback("CanUp", findViewById(R.id.text_view))
+            val connection = IPCConnection(MODULE_CODE_CAN_UP)
+            connection.addCallback(callback, 100)
+            MsToolkitConnection.instance.addObserver(connection)
+        }
+
+        fun canBusNotify(
+            systemName: String,
+            updateCode: Int,
+            intArray: IntArray?,
+            floatArray: FloatArray?,
+            strArray: Array<String?>?
+        ) {
+            if (systemName.lowercase().equals("canbus")) {
+                if (updateCode in 1..16 || updateCode in 69..81 && updateCode != 77) {
+                    findViewById<TextView>(R.id.text_view).append(
+                        "updateCode: " + updateCode + " value: " + intArray?.get(
+                            0
+                        ) + "\n"
+                    )
+                }
+                when (updateCode) {
+
+                    11 -> {
+                        val newTemp = intArray?.get(0)
+                        if (newTemp != null) {
+                            valueOfDegree = newTemp
+                            val txtTemperature = findViewById<TextView>(R.id.txtLeftTemperature)
+                            updateTemperatureText(newTemp!!, txtTemperature)
+                            playAudio(isSound!!)
+                        }
+                    }
+
+                    12 -> {
+                        val newTemp = intArray?.get(0)
+
+                        if (newTemp != null) {
+                            valueOfRightDegree = newTemp
+                            val txtTemperature = findViewById<TextView>(R.id.txtRightTemperature)
+                            updateTemperatureText(newTemp!!, txtTemperature)
+                            playAudio(isSound!!)
+                        }
+                    }
+
+                    4 -> {
+                        val autoOn = intArray?.get(0)
+                        findViewById<ImageButton>(R.id.btnAuto).setImageResource(if (autoOn == 1) R.drawable.auto else R.drawable.auto_unselect)
+                        playAudio(isSound!!)
+
+                    }
+
+                    2 -> {
+                        val acOn = intArray?.get(0)
+                        findViewById<ImageButton>(R.id.btnAC).setImageResource(if (acOn == 1) R.drawable.ac else R.drawable.ac__unselect)
                         playAudio(isSound!!)
                     }
-                }
 
-                12 -> {
-                    val newTemp = intArray?.get(0)
-
-                    if (newTemp != null) {
-                        valueOfRightDegree = newTemp
-                        val txtTemperature = findViewById<TextView>(R.id.txtRightTemperature)
-                        updateTemperatureText(newTemp!!, txtTemperature)
+                    3 -> {
+                        val recircOn = intArray?.get(0)
+                        findViewById<ImageButton>(R.id.btnRecirc).setImageResource(if (recircOn == 1) R.drawable.recirculation else R.drawable.recirculation__unselect)
                         playAudio(isSound!!)
                     }
-                }
 
-                4 -> {
-                    val autoOn = intArray?.get(0)
-                    findViewById<ImageButton>(R.id.btnAuto).setImageResource(if (autoOn == 1) R.drawable.auto else R.drawable.auto_unselect)
-                    playAudio(isSound!!)
-
-                }
-
-                2 -> {
-                    val acOn = intArray?.get(0)
-                    findViewById<ImageButton>(R.id.btnAC).setImageResource(if (acOn == 1) R.drawable.ac else R.drawable.ac__unselect)
-                    playAudio(isSound!!)
-                }
-
-                3 -> {
-                    val recircOn = intArray?.get(0)
-                    findViewById<ImageButton>(R.id.btnRecirc).setImageResource(if (recircOn == 1) R.drawable.recirculation else R.drawable.recirculation__unselect)
-                    playAudio(isSound!!)
-                }
-
-                15 -> {
-                    val recircAutoOn = intArray?.get(0)
-
-                }
-
-                14 -> {
-                    val rearDefrost = intArray?.get(0)
-                    findViewById<ImageButton>(R.id.btnRearDefrost).setImageResource(if (rearDefrost == 1) R.drawable.rear else R.drawable.rear__unselect)
-                    playAudio(isSound!!)
-                }
-
-                10 -> {
-                    val fanSpeed = intArray?.get(0)
-                    if (fanSpeed != null && fanSpeed <= 7) {
-                        currentLoaderIndex = fanSpeed
-                        findViewById<ImageButton>(R.id.btnFanOff).setImageResource(loaderDrawables[currentLoaderIndex])
+                    15 -> {
+                        val recircAutoOn = intArray?.get(0)
 
                     }
-                }
 
-                6 -> {
-                    val defrostOn = intArray?.get(0)
-                    findViewById<ImageButton>(R.id.btnDefrost).setImageResource(if (defrostOn == 1) R.drawable.defrost_vector else R.drawable.front_defrost_vector)
-                    playAudio(isSound!!)
-                }
+                    14 -> {
+                        val rearDefrost = intArray?.get(0)
+                        findViewById<ImageButton>(R.id.btnRearDefrost).setImageResource(if (rearDefrost == 1) R.drawable.rear else R.drawable.rear__unselect)
+                        playAudio(isSound!!)
+                    }
 
-                5 -> {
-                    val dualClimate = intArray?.get(0)
-                    findViewById<ImageButton>(R.id.btnDualClimate).setImageResource(if (dualClimate == 1) R.drawable.dual else R.drawable.dual_climate_unselect)
-                    playAudio(isSound!!)
-                }
+                    10 -> {
+                        val fanSpeed = intArray?.get(0)
+                        if (fanSpeed != null && fanSpeed <= 7) {
+                            currentLoaderIndex = fanSpeed
+                            findViewById<ImageButton>(R.id.btnFanOff).setImageResource(
+                                loaderDrawables[currentLoaderIndex]
+                            )
 
-                7 -> {
-                    windowOn = intArray?.get(0) == 1
-                    handleVentStatus()
-                }
+                        }
+                    }
 
-                8 -> {
-                    faceOn = intArray?.get(0) == 1
-                    handleVentStatus()
-                }
+                    6 -> {
+                        val defrostOn = intArray?.get(0)
+                        findViewById<ImageButton>(R.id.btnDefrost).setImageResource(if (defrostOn == 1) R.drawable.defrost_vector else R.drawable.front_defrost_vector)
+                        playAudio(isSound!!)
+                    }
 
-                9 -> {
-                    feetOn = intArray?.get(0) == 1
-                    handleVentStatus()
-                }
+                    5 -> {
+                        val dualClimate = intArray?.get(0)
+                        findViewById<ImageButton>(R.id.btnDualClimate).setImageResource(if (dualClimate == 1) R.drawable.dual else R.drawable.dual_climate_unselect)
+                        playAudio(isSound!!)
+                    }
 
-            }
-        }
+                    7 -> {
+                        windowOn = intArray?.get(0) == 1
+                        handleVentStatus()
+                    }
 
-    }
+                    8 -> {
+                        faceOn = intArray?.get(0) == 1
+                        handleVentStatus()
+                    }
 
-    private fun playAudio(sound: Boolean) {
-        if (sound) {
-            if (mediaPlayer != null && !mediaPlayer!!.isPlaying) {
-                mediaPlayer!!.start()
-            }
-        } else {
-
-        }
-    }
-
-    private fun updateTemperatureText(newTemp: Int, textView: TextView) {
-        if (newTemp == -2) {
-            textView.text = "LO"
-        } else if (newTemp == -3) {
-            textView.text = "HI"
-        } else {
-            val inF: Int? = newTemp?.plus(64)
-            if (inF != null) {
-//                            txtTemperature.text = "$inF°"
-                if (isCelsius!!) {
-                    val celsiusValue = fahrenheitToCelsius(newTemp)
-                    Log.d("TAG", "LEFT VALUE$celsiusValue")
-                    Log.d("TAG", "RIGHT VALUE$celsiusValue")
-                    textView.text = "$celsiusValue°"
-                } else {
-                    textView.text = "$inF°"
-                    Log.d("TAG", "LEFT VALUE$inF")
-                    Log.d("TAG", "RIGHT VALUE$inF")
+                    9 -> {
+                        feetOn = intArray?.get(0) == 1
+                        handleVentStatus()
+                    }
 
                 }
             }
-        }
-    }
 
-    private fun fahrenheitToCelsius(fahrenheit: Int): Double {
-        val initialValue = 17
-        if (fahrenheit == 1) {
-            return (initialValue.toDouble() + fahrenheit)
-        } else {
-            if (fahrenheit % 2 == 0) {
-                return (initialValue.toDouble() + (fahrenheit / 2.0) + 0.5)
+        }
+
+        private fun playAudio(sound: Boolean) {
+            if (sound) {
+                if (mediaPlayer != null && !mediaPlayer!!.isPlaying) {
+                    mediaPlayer!!.start()
+                }
             } else {
-                return (initialValue.toDouble() + (fahrenheit / 2.0) + 0.5)
+
+            }
+        }
+
+        private fun updateTemperatureText(newTemp: Int, textView: TextView) {
+            if (newTemp == -2) {
+                textView.text = "LO"
+            } else if (newTemp == -3) {
+                textView.text = "HI"
+            } else {
+                val inF: Int? = newTemp?.plus(64)
+                if (inF != null) {
+//                            txtTemperature.text = "$inF°"
+                    if (isCelsius!!) {
+                        val celsiusValue = fahrenheitToCelsius(newTemp)
+                        Log.d("TAG", "LEFT VALUE$celsiusValue")
+                        Log.d("TAG", "RIGHT VALUE$celsiusValue")
+                        textView.text = "$celsiusValue°"
+                    } else {
+                        textView.text = "$inF°"
+                        Log.d("TAG", "LEFT VALUE$inF")
+                        Log.d("TAG", "RIGHT VALUE$inF")
+
+                    }
+                }
+            }
+        }
+
+        private fun fahrenheitToCelsius(fahrenheit: Int): Double {
+            val initialValue = 17
+            if (fahrenheit == 1) {
+                return (initialValue.toDouble() + fahrenheit)
+            } else {
+                if (fahrenheit % 2 == 0) {
+                    return (initialValue.toDouble() + (fahrenheit / 2.0) + 0.5)
+                } else {
+                    return (initialValue.toDouble() + (fahrenheit / 2.0) + 0.5)
+                }
+
             }
 
         }
 
-    }
+        fun handleVentStatus() {
+            if (faceOn && feetOn) {
+                /// Middle button should chnage to blue
+                setVentColor(false, R.id.btnVentEnd)
+                setVentColor(false, R.id.btnVentTop)
+                setVentColor(true, R.id.btnVentMiddle)
+            } else if (feetOn && windowOn) {
+                /// Middle button should chnage to blue
 
-    fun handleVentStatus() {
-        if (faceOn && feetOn) {
-            /// Middle button should chnage to blue
+                setVentColor(false, R.id.btnVentEnd)
+                setVentColor(false, R.id.btnVentTop)
+                setVentColor(true, R.id.btnVentMiddle)
+            } else if (feetOn) {
+                /// Bottom button should change to blue
 
-            setVentColor(false,R.id.btnVentEnd)
-            setVentColor(false,R.id.btnVentTop)
-            setVentColor(true,R.id.btnVentMiddle)
-        } else if (feetOn && windowOn) {
-            /// Middle button should chnage to blue
+                setVentColor(true, R.id.btnVentEnd)
+                setVentColor(false, R.id.btnVentTop)
+                setVentColor(false, R.id.btnVentMiddle)
+            } else if (faceOn) {
+                /// Top button should change to blue
 
-            setVentColor(false,R.id.btnVentEnd)
-            setVentColor(false,R.id.btnVentTop)
-            setVentColor(true,R.id.btnVentMiddle)
-        } else if (feetOn) {
-            /// Bottom button should change to blue
-
-            setVentColor(true,R.id.btnVentEnd)
-            setVentColor(false,R.id.btnVentTop)
-            setVentColor(false,R.id.btnVentMiddle)
-        } else if (faceOn) {
-            /// Top button should change to blue
-
-            setVentColor(false,R.id.btnVentEnd)
-            setVentColor(true,R.id.btnVentTop)
-            setVentColor(false,R.id.btnVentMiddle)
-        } else {
-            setVentColor(false,R.id.btnVentEnd)
-            setVentColor(false,R.id.btnVentTop)
-            setVentColor(false,R.id.btnVentMiddle)
+                setVentColor(false, R.id.btnVentEnd)
+                setVentColor(true, R.id.btnVentTop)
+                setVentColor(false, R.id.btnVentMiddle)
+            } else {
+                setVentColor(false, R.id.btnVentEnd)
+                setVentColor(false, R.id.btnVentTop)
+                setVentColor(false, R.id.btnVentMiddle)
+            }
         }
-    }
 
-    private fun setVentColor(isBlue: Boolean, button: Int) {
-         if(isBlue){
-             val color = ContextCompat.getColor(this, R.color.blue)
-             findViewById<ImageButton>(button).setColorFilter(color)
-         }
-        else{
-             val color = ContextCompat.getColor(this, R.color.white) // Replace R.color.your_color with your desired color resource
-             findViewById<ImageButton>(button).setColorFilter(color)
+        private fun setVentColor(isBlue: Boolean, button: Int) {
+            if (isBlue) {
+                val color = ContextCompat.getColor(this, R.color.blue)
+                findViewById<ImageButton>(button).setColorFilter(color)
+            } else {
+                val color = ContextCompat.getColor(
+                    this,
+                    R.color.white
+                ) // Replace R.color.your_color with your desired color resource
+                findViewById<ImageButton>(button).setColorFilter(color)
+            }
         }
+
+        override fun onDestroy() {
+            Log.d("TAG", "ON DESTRYE GET CALLED")
+            if (isPermission) {
+                startService(Intent(this, FloatingService::class.java))
+            }
+            mediaPlayer?.release()
+            super.onDestroy()
+        }
+
+        override fun onStop() {
+            Log.d("TAG", "ON stop GET CALLED")
+            if (isPermission) {
+                startService(Intent(this, FloatingService::class.java))
+            }
+            super.onStop()
+        }
+
+        override fun onBackPressed() {
+            Log.d("TAG", "ON Back GET CALLED")
+            if (isPermission) {
+                startService(Intent(this, FloatingService::class.java))
+            }
+            super.onBackPressed()
+        }
+
     }
-    override fun onDestroy() {
-        mediaPlayer?.release()
-        super.onDestroy()
-    }
-}
 
 
