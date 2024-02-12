@@ -1,10 +1,12 @@
 package com.lexus.Climate
 
+import android.app.Service
 import android.os.Build
 import android.os.RemoteException
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.aoe.fytcanbusmonitor.IModuleCallback
+import com.lexus.ISClimate.service.FloatingService
 
 class ModuleCallback(name: String, private val view: TextView?) : IModuleCallback.Stub() {
     private val systemName = name
@@ -21,6 +23,13 @@ class ModuleCallback(name: String, private val view: TextView?) : IModuleCallbac
 
     companion object {
         private lateinit var act: MainActivity
+        private lateinit var actService: FloatingService
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun initService(serviceAct: FloatingService) {
+            actService = serviceAct
+        }
+
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun init(mainAct: MainActivity) {
@@ -37,6 +46,10 @@ class ModuleCallback(name: String, private val view: TextView?) : IModuleCallbac
         ) {
             act.runOnUiThread(Runnable {
                 act.canBusNotify(systemName, updateCode, intArray, floatArray, strArray)
+//                act.canBusNotify(systemName, updateCode, intArray)
+            })
+            act.runOnUiThread(Runnable {
+                actService.canBusNotify(systemName, updateCode, intArray, floatArray, strArray)
 //                act.canBusNotify(systemName, updateCode, intArray)
             })
         }

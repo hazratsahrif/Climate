@@ -13,16 +13,23 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.event.BooleanCelsiousChangedEvent
+
 import com.lexus.Climate.R
 import com.lexus.Climate.databinding.FragmentSettingDialogBinding
+import com.lexus.ISClimate.service.FloatingService
 import com.lexus.ISClimate.trial.TrailFragment
 import com.lexus.ISClimate.viewmodel.MyViewModel
 import io.paperdb.Paper
+import org.greenrobot.eventbus.EventBus
 
 
 class SettingDialogFragment : DialogFragment() {
     private lateinit var binding: FragmentSettingDialogBinding
     private lateinit var viewModel: MyViewModel
+    private  var start: Int? = 0
+    private  var end: Int? = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +51,7 @@ class SettingDialogFragment : DialogFragment() {
     }
 
     override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
 //        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
 //        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
 //        actionBar?.hide()
@@ -64,13 +72,23 @@ class SettingDialogFragment : DialogFragment() {
         binding.btnLeft.setOnClickListener {
             setLeftColor()
             viewModel.updateValues(5, 1)
-            viewModel.updateBoolean(false,requireContext())
+            viewModel.updateBoolean(false)
+            EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.degreeValue.value!!,5,1))
 
+
+        }
+        viewModel.getStartAndEndValuesLiveData().observe(this){ pair ->
+            val (start, end) = pair ?: Pair(null, null)
+              this.start = start
+              this.end = end
+//            EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.degreeValue.value!!,start,end))
+//            EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.degreeValue.value!!,start,end))
         }
         binding.btnRight.setOnClickListener {
             setRightColor()
             viewModel.updateValues(1,4)
-            viewModel.updateBoolean(true,requireContext())
+            viewModel.updateBoolean(true)
+            EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.degreeValue.value!!,1,4))
         }
         binding.btnON.setOnClickListener {
             setONColor()
@@ -86,14 +104,18 @@ class SettingDialogFragment : DialogFragment() {
         binding.btnCelcius.setOnClickListener {
             setCelsiusColor()
             viewModel.updateDegreeBoolean(true)
+            // Post event to EventBus
+            EventBus.getDefault().post(BooleanCelsiousChangedEvent(true,start,end))
         }
         binding.btnFahren.setOnClickListener {
             setFahrenheitColor()
             viewModel.updateDegreeBoolean(false)
+            EventBus.getDefault().post(BooleanCelsiousChangedEvent(false,start,end))
         }
         binding.btnActivate.setOnClickListener {
             val intent = Intent(requireContext(), TrailFragment::class.java)
             startActivity(intent)
+
         }
         return  binding.root
     }
