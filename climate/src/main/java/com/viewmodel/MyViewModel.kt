@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.paperdb.Paper
+import org.koin.core.context.startKoin
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -46,9 +47,9 @@ class MyViewModel: ViewModel() {
         return startAndEndValues
     }
 
-    fun updateBoolean(newValue: Boolean,context: Context) {
+    fun updateBoolean(newValue: Boolean) {
         booleanValue.value = newValue
-        saveLeftRightValue(newValue,context)
+        saveLeftRightValue(newValue)
     }
 
     fun updateSoundBoolean(newValue: Boolean) {
@@ -85,7 +86,7 @@ class MyViewModel: ViewModel() {
     private fun getSaveDegreeValue(): Boolean? {
         return Paper.book().read("degree")
     }
-    private fun saveLeftRightValue(isLeftRight:Boolean,context: Context){
+    private fun saveLeftRightValue(isLeftRight:Boolean){
         Paper.book().write("mode",isLeftRight)
     }
 
