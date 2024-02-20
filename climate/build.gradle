@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "com.lexus.Climate"
         minSdk 28
-        targetSdk 32
+        targetSdk 33
         versionCode 2
         versionName "1.01"
 

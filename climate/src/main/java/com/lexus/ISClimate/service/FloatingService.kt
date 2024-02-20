@@ -93,7 +93,7 @@ class FloatingService : Service(), View.OnTouchListener {
         viewModel.getDegreeBoolean()
         viewModel.getAccessValue()
         observeValue()
-        startService(Intent(this, FloatingService::class.java))
+//        startService(Intent(this, FloatingService::class.java))
         setOnToushClickListner()
 //        val closeButtonCollapsed = mFloatingView!!.findViewById<ImageButton>(R.id.btnAuto) as ImageButton
 //        closeButtonCollapsed.setOnClickListener { //close the service and remove the from from the window
@@ -114,10 +114,11 @@ class FloatingService : Service(), View.OnTouchListener {
 //        else utils.switchLayout(parentLayout,2,0,mFloatingView!!.findViewById(R.id.layoutLeft),mFloatingView!!.findViewById(R.id.layoutRight))
 
         viewModel.updateValues(event.start!!,event.end!!)
-        viewModel.updateValues(event.start!!,event.end!!)
+//        viewModel.updateValues(event.start!!,event.end!!)
 //        setInitialTemperature()
 
     }
+
     private fun observeValue() {
         viewModel.degreeValue.observeForever{
             Log.d("TAG", "Observe value in service $it")
@@ -130,10 +131,24 @@ class FloatingService : Service(), View.OnTouchListener {
             }
         }
     }
+    private fun setDriverMode() {
+        if (viewModel.booleanValue.value == null) {
+            Log.d("TAG", "setDriverMode: IF CONDITION ")
+
+        } else {
+            if (viewModel.getBoolean()!!) {
+                Log.d("TAG", "setDriverMode: ELSE CONDITION ")
+                utils.switchLayout(parentLayout,4-4,1,mFloatingView!!.findViewById(R.id.layoutLeft),mFloatingView!!.findViewById(R.id.layoutRight))
+
+            } else {
+                utils.switchLayout(parentLayout,1,5,mFloatingView!!.findViewById(R.id.layoutLeft),mFloatingView!!.findViewById(R.id.layoutRight))
+            }
+        }
+    }
     private fun setInitialTemperature() {
         val txtTemperature = mFloatingView!!.findViewById<TextView>(R.id.txtLeftTemperature)
         val txtRightTemperature = mFloatingView!!.findViewById<TextView>(R.id.txtRightTemperature)
-        utils.updateTemperatureText(valueOfDegree!!+4, txtTemperature,isCelsius)
+        utils.updateTemperatureText(valueOfDegree!!+2, txtTemperature,isCelsius)
         utils.updateTemperatureText(valueOfRightDegree!!, txtRightTemperature,isCelsius)
     }
     private fun showFloatingView() {
@@ -172,7 +187,7 @@ class FloatingService : Service(), View.OnTouchListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
+//        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
 //        visibleLayout()
         return START_REDELIVER_INTENT
 

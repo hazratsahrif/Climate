@@ -44,6 +44,7 @@ import org.koin.core.context.stopKoin
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity(), View.OnTouchListener {
@@ -100,6 +101,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 //        startService( Intent(this, FloatingService::class.java))
         viewModel.getStartAndEndValuesLiveData().observe(this) { pair ->
             val (start, end) = pair ?: Pair(null, null)
+            Log.d("TAG", "onCreate: swith layout" +start)
             utils.switchLayout(parentLayout,end!!,start!!,findViewById(R.id.layoutLeft),findViewById(R.id.layoutRight))
 
 //            switchLayout(parentLayout, end!!, start!!)
@@ -126,7 +128,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         }
         else{
             isPermission = true
-            startService(Intent(this,FloatingService::class.java))
+//            startService(Intent(this,FloatingService::class.java))
         }
 
     }
@@ -154,6 +156,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 
     private fun observeValue() {
         viewModel.isSound.observe(this, Observer {
+            Toast.makeText(this, "Sound"+it, Toast.LENGTH_SHORT).show()
             if (it != null && it == true) {
                 isSound = it
             } else {
@@ -161,6 +164,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
             }
         })
         viewModel.degreeValue.observe(this, Observer {
+            Toast.makeText(this, "Degree "+it, Toast.LENGTH_SHORT).show()
             if (it == null) {
                 viewModel.degreeValue.value = true
                 setInitialTemperature()
@@ -171,6 +175,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
             }
         })
         viewModel.accessGranted.observe(this, Observer {
+            Toast.makeText(this, "isAccess $it", Toast.LENGTH_SHORT).show()
             if (it == true && it != null) {
             } else {
                 saveDate = viewModel.getCurrentDateTime()
@@ -218,17 +223,15 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
     }
     private fun setDriverMode() {
         if (viewModel.booleanValue.value == null) {
+            Log.d("TAG", "setDriverMode: IF CONDITION ")
+            viewModel.updateValues(4,1)
 
         } else {
             if (viewModel.getBoolean()!!) {
-                utils.switchLayout(parentLayout,4,1,findViewById(R.id.layoutLeft),findViewById(R.id.layoutRight))
-                EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.getDegreeBoolean()!!,4,1))
-
-//                switchLayout(parentLayout, 4, 1)
+                Log.d("TAG", "setDriverMode: ELSE CONDITION ")
+                utils.switchLayout(parentLayout,4-4,1-5,findViewById(R.id.layoutLeft),findViewById(R.id.layoutRight))
             } else {
-//                switchLayout(parentLayout, 1, 5)
-                utils.switchLayout(parentLayout,1,5,findViewById(R.id.layoutLeft),findViewById(R.id.layoutRight))
-                EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.getDegreeBoolean()!!,1,5))
+                utils.switchLayout(parentLayout,1-4,5-5,findViewById(R.id.layoutLeft),findViewById(R.id.layoutRight))
             }
         }
     }
@@ -243,7 +246,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 
     override fun onStart() {
         super.onStart()
-//        stopService(Intent(this,FloatingService::class.java))
+        stopService(Intent(this,FloatingService::class.java))
         ModuleCallback.init(this)
         connectMain()
         connectCanbus()
@@ -476,17 +479,17 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 
                 7 -> {
                     windowOn = intArray?.get(0) == 1
-                    handleVentStatus()
+//                    handleVentStatus()
                 }
 
                 8 -> {
                     faceOn = intArray?.get(0) == 1
-                    handleVentStatus()
+//                    handleVentStatus()
                 }
 
                 9 -> {
                     feetOn = intArray?.get(0) == 1
-                    handleVentStatus()
+//                    handleVentStatus()
                 }
 
             }

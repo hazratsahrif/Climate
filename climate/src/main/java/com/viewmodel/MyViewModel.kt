@@ -1,6 +1,7 @@
 package com.lexus.ISClimate.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -57,11 +58,13 @@ class MyViewModel: ViewModel() {
         saveSoundValue(newValue)
     }
     fun getSoundBoolean(): Boolean? {
+        Log.d("TAG", "getSoundBoolean: ")
         isSound.value = getSoundStoreValue()
         return isSound.value
 
     }
     fun getBoolean(): Boolean? {
+        Log.d("TAG", "getBoolean: ")
          booleanValue.value = getLeftRightValue()
         return booleanValue.value
 
@@ -79,6 +82,7 @@ class MyViewModel: ViewModel() {
     }
 
     fun getDegreeBoolean(): Boolean? {
+        Log.d("TAG", "getDegreeBoolean: ")
         degreeValue.value = getSaveDegreeValue()
         return degreeValue.value
 
@@ -127,6 +131,7 @@ class MyViewModel: ViewModel() {
     }
 
     fun getAccessValue(): Boolean? {
+        Log.d("TAG", "getAccessValue: ")
         accessGranted.value = getSaveAccessValue()
         return accessGranted.value
 

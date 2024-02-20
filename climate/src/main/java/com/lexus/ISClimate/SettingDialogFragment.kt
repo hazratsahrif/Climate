@@ -81,6 +81,8 @@ class SettingDialogFragment : DialogFragment() {
             val (start, end) = pair ?: Pair(null, null)
               this.start = start
               this.end = end
+
+
 //            EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.degreeValue.value!!,start,end))
 //            EventBus.getDefault().post(BooleanCelsiousChangedEvent(viewModel.degreeValue.value!!,start,end))
         }
@@ -105,12 +107,12 @@ class SettingDialogFragment : DialogFragment() {
             setCelsiusColor()
             viewModel.updateDegreeBoolean(true)
             // Post event to EventBus
-            EventBus.getDefault().post(BooleanCelsiousChangedEvent(true,start,end))
+            EventBus.getDefault().post(BooleanCelsiousChangedEvent(true,5,1))
         }
         binding.btnFahren.setOnClickListener {
             setFahrenheitColor()
             viewModel.updateDegreeBoolean(false)
-            EventBus.getDefault().post(BooleanCelsiousChangedEvent(false,start,end))
+            EventBus.getDefault().post(BooleanCelsiousChangedEvent(false,1,4))
         }
         binding.btnActivate.setOnClickListener {
             val intent = Intent(requireContext(), TrailFragment::class.java)
