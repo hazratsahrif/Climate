@@ -10,7 +10,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -29,30 +28,19 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.aoe.fytcanbusmonitor.ModuleCodes
 import com.aoe.fytcanbusmonitor.MsToolkitConnection
-import com.aoe.fytcanbusmonitor.RemoteModuleProxy
+import com.event.BooleanCelsiousChangedEvent
 import com.lexus.Climate.IPCConnection
-import com.lexus.Climate.MainActivity
 import com.lexus.Climate.ModuleCallback
 import com.lexus.Climate.R
-import com.lexus.ISClimate.trial.TrailFragment
 import com.lexus.ISClimate.viewmodel.MyViewModel
 import com.shared.Utils
 import io.paperdb.Paper
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.lifecycle.ViewModel
-import com.aoe.fytcanbusmonitor.ModuleObject.Companion.get
-import com.event.BooleanCelsiousChangedEvent
-import com.koinmoduel.viewModelModule
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FloatingService : Service(), View.OnTouchListener {
     private lateinit var viewModel: MyViewModel
@@ -93,7 +81,7 @@ class FloatingService : Service(), View.OnTouchListener {
         viewModel.getDegreeBoolean()
         viewModel.getAccessValue()
         observeValue()
-        startService(Intent(this, FloatingService::class.java))
+//        startService(Intent(this, FloatingService::class.java))
         setOnToushClickListner()
 //        val closeButtonCollapsed = mFloatingView!!.findViewById<ImageButton>(R.id.btnAuto) as ImageButton
 //        closeButtonCollapsed.setOnClickListener { //close the service and remove the from from the window
@@ -137,14 +125,26 @@ class FloatingService : Service(), View.OnTouchListener {
         utils.updateTemperatureText(valueOfRightDegree!!, txtRightTemperature,isCelsius)
     }
     private fun showFloatingView() {
-        val LAYOUT_FLAG: Int
-        Log.d("TAG", "showFloatingView: IF Condition")
-        LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+//        Log.d("TAG", "showFloatingView: IF Condition")
+//        val LAYOUT_FLAG: Int = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+//        params = WindowManager.LayoutParams(
+//            WindowManager.LayoutParams.MATCH_PARENT,
+//            WindowManager.LayoutParams.WRAP_CONTENT,
+//            LAYOUT_FLAG,
+//            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+//            PixelFormat.TRANSLUCENT
+//        )
+        val LAYOUT_FLAG: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             LAYOUT_FLAG,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         )
         //Specify the view position
@@ -153,6 +153,7 @@ class FloatingService : Service(), View.OnTouchListener {
 //        params!!.x = 0
 //        params!!.y = 0
         //Add the view to the window
+//        mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager?
         mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager?
         mWindowManager!!.addView(mFloatingView, params)
     }
@@ -172,9 +173,9 @@ class FloatingService : Service(), View.OnTouchListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
+//        mFloatingView!!.findViewById<FrameLayout>(R.id.root_conatiner).visibility = View.GONE
 //        visibleLayout()
-        return START_REDELIVER_INTENT
+        return START_STICKY
 
     }
 
@@ -426,6 +427,7 @@ class FloatingService : Service(), View.OnTouchListener {
 
 
     private fun startForeground() {
+        Toast.makeText(this, "Start forground service", Toast.LENGTH_SHORT).show()
         val channelId =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 createNotificationChannel("my_service", "My Background Service")
@@ -442,9 +444,12 @@ class FloatingService : Service(), View.OnTouchListener {
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
         startForeground(101, notification)
+        Toast.makeText(this, "End forground service", Toast.LENGTH_SHORT).show()
+
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(channelId: String, channelName: String): String{
+        Toast.makeText(this,"notification channel created",Toast.LENGTH_SHORT).show()
         val chan = NotificationChannel(channelId,
             channelName, NotificationManager.IMPORTANCE_NONE)
         chan.lightColor = Color.BLUE
@@ -453,6 +458,7 @@ class FloatingService : Service(), View.OnTouchListener {
         service.createNotificationChannel(chan)
         return channelId
     }
+
 
 
 }

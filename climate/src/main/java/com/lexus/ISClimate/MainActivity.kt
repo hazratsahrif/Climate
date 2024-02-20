@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         utils = Utils()
          setOnToushClickListner()
         viewModel = ViewModelProvider(this)[MyViewModel::class.java]
+        startService(Intent(this,FloatingService::class.java))
 
 //        setOnClick()
         parentLayout = findViewById<TableRow>(R.id.parentLayout)
@@ -118,7 +119,6 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
 
     private fun getPermission() {
         if (!Settings.canDrawOverlays(applicationContext)) {
-
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
             val uri = Uri.fromParts("package", packageName, null)
             intent.data = uri
@@ -250,7 +250,7 @@ class MainActivity : AppCompatActivity(), View.OnTouchListener {
         connectSound()
         connectCanUp()
         MsToolkitConnection.instance.connect(this)
-        getPermission()
+//        getPermission()
     }
 
     override fun onTouch(view: View?, motionEvent: MotionEvent?): Boolean {
